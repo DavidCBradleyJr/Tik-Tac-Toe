@@ -8,6 +8,7 @@ public class GameRunner {
     private static boolean gameDone = false;
     private static ArrayList<Integer> playerPositions = new ArrayList<>();
     private static ArrayList<Integer> cpuPositions = new ArrayList<>();
+    private static int turn = 0;
 
 
     public static void printGameBoard(char[][] gameBoard) {
@@ -32,31 +33,39 @@ public class GameRunner {
 
     public static void setPosition(String user) {
         if (user.equals("player")) {
+            symbol = 'X';
             System.out.print("Where do you want to place your X (Number position 1-9, left to right)? ");
             Scanner scan = new Scanner(System.in);
             int pos = scan.nextInt();
             game.setPlayerPos(pos);
-            boolean isEmpty = positions.get(pos).equals(" ");
-            symbol = 'X';
+            boolean isEmpty = false;
+            if(pos >= 1 && pos <= 9) {
+                isEmpty = positions.get(pos).equals(" ");
+            }
             if(isEmpty) {
                 playerPositions.add(pos);
+                placeGameBoard(symbol);
             } else {
-                System.out.println("That spot is already taken! Try again.");
+                turn = 0;
+                System.out.println("That spot is not available! Try again.");
                 setPosition("player");
             }
         } else if (user.equals("cpu")) {
+            symbol = 'O';
             Random random = new Random();
             int cpuPos = random.nextInt(9 - 1 + 1) + 1;
             boolean isEmpty = positions.get(cpuPos).equals(" ");
             if (isEmpty) {
                 game.setPlayerPos(cpuPos);
                 cpuPositions.add(cpuPos);
+                placeGameBoard(symbol);
             } else {
                 setPosition("cpu");
             }
-            symbol = 'O';
         }
+    }
 
+    public static void placeGameBoard(char symbol) {
         char[][] gameBoard = game.getGameBoard();
         switch (game.getPlayerPos()) {
             case 1:
@@ -130,7 +139,6 @@ public class GameRunner {
 
     public static void main(String args[]) {
         printGameBoard(game.getGameBoard());
-        int turn = 0;
         while (!gameDone) {
             if (turn == 0) {
                 setPosition("player");
